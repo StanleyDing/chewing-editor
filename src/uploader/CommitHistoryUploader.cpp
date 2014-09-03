@@ -21,47 +21,60 @@
 
 #include <QDebug>
 #include <QFile>
-#include <QtNetwork/QNetworkAccessManager>
-#include <QtNetwork/QHttpMultiPart>
-#include <QtNetwork/QNetworkReply>
-#include <QtNetwork/QNetworkRequest>
+#include <curl/curl.h>
 
 #include <cstdio>
 
-CommitHistoryUploader::CommitHistoryUploader()
+CommitHistoryUploader::CommitHistoryUploader(QObject *parent)
     :ctx_{chewing_new2(nullptr, nullptr, nullptr, nullptr), chewing_delete}
 {
 }
 
-bool CommitHistoryUploader::save()
+bool CommitHistoryUploader::upload()
 {
+    CURL *curl;
+    CURLcode res;
+
+    struct curl_httppost *formpost = NULL;
+    struct curl_httppost *lastptr = NULL;
+
     QTemporaryFile file;
+
     if (file.open()) {
         chewing_commit_history_export(ctx_.get(), file.fileName().toStdString().c_str());
+
+        curl_global_init(CURL_GLOBAL_ALL);
+
+        printf("filename: %s\n", file.fileName().toStdString().c_str());
+        /* Fill in the file upload field */ 
+        curl_formadd(&formpost,
+                     &lastptr,
+                     CURLFORM_COPYNAME, "file",
+                     CURLFORM_FILE, file.fileName().toStdString().c_str(),
+                     CURLFORM_END);
+
+        curl = curl_easy_init();
+
+        if (!curl)
+            return false;
+
+        curl_easy_setopt(curl, CURLOPT_URL, "http://localhost/addall.php");
+        curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
+
+        res = curl_easy_perform(curl);
+        if (res != CURLE_OK)
+            fprintf(stderr, "curl_easy_perform() failed: %s\n",
+                    curl_easy_strerror(res));
+
+        curl_easy_cleanup(curl);
+        curl_formfree(formpost);
+
+        file.close();
     }
     else {
         qDebug() << "Cannot open file.";
         return false;
     }
-    file.close();
-
-    file.open();
-
-    QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
-    QHttpPart jsonPart;
-    jsonPart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data;name=\"file\";filename=\""+file.fileName()+"\""));
-    jsonPart.setBodyDevice(&file);
-
-    multiPart->append(jsonPart);
-
-    QUrl url("http://localhost/test.php");
-    QNetworkRequest request(url);
-
-    QNetworkAccessManager manager;
-    QNetworkReply *reply = manager.post(request, multiPart);
-
-    printf("Reply:\n%s\n", ((QString)reply->readAll()).toStdString().c_str());
-    printf("BEEN HERE\n");
 
     return true;
 }

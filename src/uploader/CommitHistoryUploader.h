@@ -26,14 +26,16 @@
 
 #include <chewing.h>
 
-class CommitHistoryUploader {
+class CommitHistoryUploader final: public QObject {
+    Q_OBJECT
 public:
-    explicit CommitHistoryUploader();
+    explicit CommitHistoryUploader(QObject * parent = 0);
     CommitHistoryUploader(const CommitHistoryUploader&) = delete;
     CommitHistoryUploader& operator=(const CommitHistoryUploader&) = delete;
     virtual ~CommitHistoryUploader() = default;
 
-    bool save();
+public slots:
+    bool upload();
 
 private:
     std::unique_ptr<ChewingContext, void (*)(ChewingContext*)> ctx_;

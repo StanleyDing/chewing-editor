@@ -69,6 +69,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(Qt5Widgets REQUIRED)
+find_package(CURL REQUIRED)
 
 find_program(LUPDATE lupdate)
 if (NOT LUPDATE)
@@ -139,6 +140,7 @@ target_link_libraries(chewing-editor
     uploader
     util
     ${QT_QTNETWORK_LIBRARIES}
+    curl
 )
 qt5_use_modules(chewing-editor Widgets)
 install(PROGRAMS ${CMAKE_BINARY_DIR}/chewing-editor DESTINATION ${CMAKE_INSTALL_BINDIR})

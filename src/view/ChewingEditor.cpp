@@ -33,6 +33,7 @@ ChewingEditor::ChewingEditor(QWidget *parent)
     ,model_{new UserphraseModel{this}}
     ,proxyModel_{new UserphraseSortFilterProxyModel{this}}
     ,commitHistoryModel_{new CommitHistoryModel{this}}
+    ,commitHistoryUploader_{new CommitHistoryUploader{this}}
     ,addNewPhraseDialog_{new AddNewPhraseDialog{this}}
     ,importDialog_{new QFileDialog{this}}
     ,exportDialog_{new QFileDialog{this}}
@@ -51,7 +52,7 @@ ChewingEditor::ChewingEditor(QWidget *parent)
     setupRefresh();
     setupFilter();
     setupReset();
-    testUpload();
+    setupUpload();
     aboutWidget();
 }
 
@@ -219,8 +220,10 @@ void ChewingEditor::aboutWidget()
    );
 }
 
-void ChewingEditor::testUpload()
+void ChewingEditor::setupUpload()
 {
-    CommitHistoryUploader uploader;
-    uploader.save();
+    connect(
+        ui_.get()->actionUpload, SIGNAL(triggered()),
+        commitHistoryUploader_, SLOT(upload())
+    );
 }
