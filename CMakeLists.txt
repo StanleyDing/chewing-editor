@@ -96,6 +96,7 @@ include_directories(
     ${PROJECT_SOURCE_DIR}/src/util
     ${PROJECT_SOURCE_DIR}/src/view
     ${PROJECT_SOURCE_DIR}/src/uploader
+    ${PROJECT_SOURCE_DIR}/src/downloader
     ${CHEWING_INCLUDE_DIRS}
     ${Qt5Widgets_INCLUDES}
 )
@@ -114,6 +115,11 @@ qt5_use_modules(importer Widgets)
 file(GLOB_RECURSE uploader_src ${PROJECT_SOURCE_DIR}/src/uploader/*)
 add_library(uploader STATIC ${uploader_src})
 qt5_use_modules(uploader Network)
+
+# downloader
+file(GLOB_RECURSE downloader_src ${PROJECT_SOURCE_DIR}/src/downloader/*)
+add_library(downloader STATIC ${downloader_src})
+qt5_use_modules(downloader Network)
 
 # ui
 file(GLOB ui_src ${PROJECT_SOURCE_DIR}/src/ui/*)
@@ -138,6 +144,7 @@ target_link_libraries(chewing-editor
     exporter
     importer
     uploader
+    downloader
     util
     ${QT_QTNETWORK_LIBRARIES}
     curl

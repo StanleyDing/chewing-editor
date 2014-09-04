@@ -29,6 +29,7 @@
 #include "UserphraseSortFilterProxyModel.h"
 #include "CommitHistoryModel.h"
 #include "CommitHistoryUploader.h"
+#include "CommitHistoryDownloader.h"
 
 namespace Ui {
     class ChewingEditor;
@@ -59,6 +60,7 @@ private:
     void setupReset();
     void aboutWidget();
     void setupUpload();
+    void setupDownload();
 
     std::unique_ptr<Ui::ChewingEditor> ui_;
 
@@ -67,6 +69,7 @@ private:
 
     CommitHistoryModel *commitHistoryModel_;
     CommitHistoryUploader *commitHistoryUploader_;
+    CommitHistoryDownloader *commitHistoryDownloader_;
 
     AddNewPhraseDialog *addNewPhraseDialog_;
     QFileDialog *importDialog_;

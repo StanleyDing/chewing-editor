@@ -25,7 +25,6 @@
 
 #include "ChewingImporter.h"
 #include "ChewingExporter.h"
-#include "CommitHistoryUploader.h"
 
 ChewingEditor::ChewingEditor(QWidget *parent)
     :QMainWindow{parent}
@@ -34,6 +33,7 @@ ChewingEditor::ChewingEditor(QWidget *parent)
     ,proxyModel_{new UserphraseSortFilterProxyModel{this}}
     ,commitHistoryModel_{new CommitHistoryModel{this}}
     ,commitHistoryUploader_{new CommitHistoryUploader{this}}
+    ,commitHistoryDownloader_{new CommitHistoryDownloader{this}}
     ,addNewPhraseDialog_{new AddNewPhraseDialog{this}}
     ,importDialog_{new QFileDialog{this}}
     ,exportDialog_{new QFileDialog{this}}
@@ -53,6 +53,7 @@ ChewingEditor::ChewingEditor(QWidget *parent)
     setupFilter();
     setupReset();
     setupUpload();
+    setupDownload();
     aboutWidget();
 }
 
@@ -225,5 +226,13 @@ void ChewingEditor::setupUpload()
     connect(
         ui_.get()->actionUpload, SIGNAL(triggered()),
         commitHistoryUploader_, SLOT(upload())
+    );
+}
+
+void ChewingEditor::setupDownload()
+{
+    connect(
+        ui_.get()->actionDownload, SIGNAL(triggered()),
+        commitHistoryDownloader_, SLOT(download())
     );
 }

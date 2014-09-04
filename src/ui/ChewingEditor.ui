@@ -78,6 +78,7 @@
     <addaction name="actionImport"/>
     <addaction name="actionExport"/>
     <addaction name="actionUpload"/>
+    <addaction name="actionDownload"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -111,6 +112,11 @@
   <action name="actionUpload">
    <property name="text">
     <string>Upload</string>
+   </property>
+  </action>
+  <action name="actionDownload">
+   <property name="text">
+    <string>Download</string>
    </property>
   </action>
   <action name="actionAdd_phrase">
