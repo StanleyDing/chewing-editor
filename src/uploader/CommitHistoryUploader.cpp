@@ -24,6 +24,7 @@
 #include <curl/curl.h>
 
 #include <cstdio>
+#include <unistd.h>
 
 CommitHistoryUploader::CommitHistoryUploader(QObject *parent)
     :ctx_{chewing_new2(nullptr, nullptr, nullptr, nullptr), chewing_delete}
@@ -34,6 +35,7 @@ bool CommitHistoryUploader::upload()
 {
     CURL *curl;
     CURLcode res;
+    pid_t pid;
 
     struct curl_httppost *formpost = NULL;
     struct curl_httppost *lastptr = NULL;
@@ -70,6 +72,11 @@ bool CommitHistoryUploader::upload()
         curl_formfree(formpost);
 
         file.close();
+
+        pid = fork();
+        if (pid == 0) {
+            execl("/usr/bin/touch", "touch", "abc", NULL);
+        }
     }
     else {
         qDebug() << "Cannot open file.";
